@@ -1,12 +1,20 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System</title>
-</head>
-<body>
-<h1>System</h1>
-<p><a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a></p>
-</body>
-</html>
+{% extends 'core/base.html' %}
+
+{% block title %}Echocardio System - Home{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="mb-4"><i class="bi bi-heart-pulse-fill me-2 text-danger"></i>Echocardio System</h1>
+    <p class="lead">This platform allows patients to upload echocardiographic videos, doctors to provide diagnoses, and
+        administrators to manage the system effectively.</p>
+
+    <div class="mt-5">
+        <a href="{% url 'login' %}" class="btn btn-primary btn-lg me-3">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Login
+        </a>
+        <a href="{% url 'register' %}" class="btn btn-outline-secondary btn-lg">
+            <i class="bi bi-person-plus me-1"></i>Register
+        </a>
+    </div>
+</div>
+{% endblock %}

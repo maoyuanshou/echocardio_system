@@ -1,0 +1,41 @@
+{% extends 'core/base.html' %}
+
+{% block title %}User Information List{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4 text-center text-info">All User Information</h2>
+
+    <table class="table table-bordered table-hover table-striped">
+        <thead class="table-dark">
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Registration Date</th>
+            <th>Edit</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+                {% if user.role == 'doctor' %} Doctor
+                {% elif user.role == 'patient' %} Patient
+                {% elif user.role == 'admin' %} Admin
+                {% else %} Unknown {% endif %}
+            </td>
+            <td>{{ user.date_joined|date:"Y-m-d H:i:s" }}</td>
+            <td>
+                <a href="{% url 'edit_user_info' user.id %}" class="btn btn-sm btn-outline-info me-1">
+                    <i class="bi bi-pencil-square"></i> Edit
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Upload Echocardiogram Video{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-upload me-2"></i>Upload Echocardiogram Video</h2>
+
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="card shadow-sm p-4">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="video" class="form-label"><i class="bi bi-file-earmark-play me-1"></i>Select video file</label>
+            <input type="file" class="form-control" name="video" id="video" accept=".avi,.mp4" required>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-cloud-arrow-up me-1"></i>Upload
+        </button>
+        <a href="{% url 'home' %}" class="btn btn-secondary ms-2">
+            <i class="bi bi-house-door me-1"></i>Back to Home
+        </a>
+    </form>
+</div>
+{% endblock %}

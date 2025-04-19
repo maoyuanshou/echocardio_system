@@ -1,12 +1,13 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
 class User(AbstractUser):
     ROLE_CHOICES = (
-        ('patient', '病人'),
-        ('doctor', '医生'),
-        ('admin', '管理员'),
+        ('patient', 'Patient'),
+        ('doctor', 'Doctor'),
+        ('admin', 'Admin'),
     )
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='patient')
 
@@ -15,25 +16,36 @@ class User(AbstractUser):
 
 
 class VideoUpload(models.Model):
-    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='videos')
+    patient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     video = models.FileField(upload_to='videos/')
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    classification_result = models.CharField(max_length=20, blank=True, null=True)
+    upload_time = models.DateTimeField(auto_now_add=True)
+    classification_result = models.CharField(max_length=10, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.patient.username} - {self.video.name}"
 
 
 class MIDetection(models.Model):
-    video = models.OneToOneField(VideoUpload, on_delete=models.CASCADE)
-    model1_result = models.CharField(max_length=20)
-    model2_result = models.CharField(max_length=20)
-    final_result = models.CharField(max_length=20)
+    patient = models.ForeignKey(User, on_delete=models.CASCADE)
+    video = models.ForeignKey(VideoUpload, on_delete=models.CASCADE)
+    result_model1 = models.CharField(max_length=10)
+    result_model2 = models.CharField(max_length=10)
+    final_result = models.CharField(max_length=10)  # "MI" or "Normal"
     detected_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.patient.username} - {self.final_result}"
 
 
 class Diagnosis(models.Model):
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='doctor_diagnoses')
+    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='patient_diagnoses')
     video = models.ForeignKey(VideoUpload, on_delete=models.CASCADE)
-    doctor = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.TextField()
+    diagnosis_text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.doctor.username}'s diagnosis of {self.patient.username}"
 
 
 class DiagnosisHistory(models.Model):
@@ -43,8 +55,11 @@ class DiagnosisHistory(models.Model):
 
 
 class RoleChangeHistory(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    old_role = models.CharField(max_length=10)
-    new_role = models.CharField(max_length=10)
-    changed_at = models.DateTimeField(auto_now_add=True)
-    changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='role_changes')
+    admin = models.ForeignKey(User, on_delete=models.CASCADE, related_name='admin_role_changes')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_role_changes')
+    old_role = models.CharField(max_length=50)
+    new_role = models.CharField(max_length=50)
+    change_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.admin.username} changed {self.user.username}'s role"

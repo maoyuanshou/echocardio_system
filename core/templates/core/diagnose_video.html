@@ -1,0 +1,56 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Video Diagnosis{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-center mb-4">
+        <i class="bi bi-person-circle text-primary"></i>
+        Diagnose video for <strong>{{ patient.username }}</strong>
+    </h3>
+
+    <div class="mb-3 text-center">
+        <video src="{{ video.video.url }}" controls class="w-100" style="max-width: 640px;"></video>
+    </div>
+
+    {% if video.classification_result or video.midetection %}
+    <div class="alert alert-info">
+        <strong>Model Prediction Results:</strong><br>
+        {% if video.classification_result %}
+        <i class="bi bi-gear-fill text-warning"></i> View Classification: <strong>{{
+        video.classification_result
+        }}</strong><br>
+        {% endif %}
+        {% if video.midetection %}
+        <i class="bi bi-heart-fill text-danger"></i> MI Detection: <strong>{{ video.midetection }}</strong>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="diagnosis_text">Diagnosis:</label>
+            <textarea class="form-control" id="diagnosis_text" name="diagnosis_text" rows="5"
+                      placeholder="Enter your diagnosis here...">{% if last_diagnosis %}{{ last_diagnosis.diagnosis_text }}{% endif %}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">
+            <i class="bi bi-check-circle-fill"></i> Submit Diagnosis
+        </button>
+    </form>
+
+    <h4 class="mt-5">Previous Diagnoses</h4>
+    <ul class="list-group">
+        {% for d in previous_diagnoses %}
+        <li class="list-group-item">
+            <small class="text-muted">{{ d.created_at|date:"Y-m-d H:i" }}</small><br>
+            <i class="bi bi-file-earmark-text"></i> {{ d.diagnosis_text }}
+        </li>
+        {% empty %}
+        <li class="list-group-item text-muted">
+            <i class="bi bi-emoji-frown"></i> No previous diagnoses available.
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

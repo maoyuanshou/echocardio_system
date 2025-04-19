@@ -1,0 +1,48 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Role Change History{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4 text-center text-success">Role Change History</h2>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th scope="col">Admin</th>
+                <th scope="col">Modified User</th>
+                <th scope="col">Old Role</th>
+                <th scope="col">New Role</th>
+                <th scope="col">Change Time</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for record in role_changes %}
+            <tr>
+                <td>{{ record.admin.username }}</td>
+                <td>{{ record.user.username }}</td>
+                <td>
+                    {% if record.old_role == 'doctor' %} Doctor
+                    {% elif record.old_role == 'patient' %} Patient
+                    {% elif record.old_role == 'admin' %} Admin
+                    {% else %} Unknown {% endif %}
+                </td>
+                <td>
+                    {% if record.new_role == 'doctor' %} Doctor
+                    {% elif record.new_role == 'patient' %} Patient
+                    {% elif record.new_role == 'admin' %} Admin
+                    {% else %} Unknown {% endif %}
+                </td>
+                <td>{{ record.change_date|date:"Y-m-d H:i:s" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center text-muted">No role change records available</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

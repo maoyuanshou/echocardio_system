@@ -1,0 +1,49 @@
+{% extends 'core/base.html' %}
+{% block title %}Patient Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Welcome, {{ user.username }}! Here are your uploaded videos and diagnosis records.</h2>
+
+{% if videos %}
+<div class="row row-cols-1 g-4">
+    {% for video in videos %}
+    <div class="col">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-camera-video-fill me-1"></i> Uploaded at: {{ video.upload_time }}
+                </h5>
+                <video src="{{ video.video.url }}" width="100%" controls class="mb-3 mt-2 rounded"></video>
+                <div class="mb-3">
+                    <a href="{% url 'download_video' video.id %}" class="btn btn-sm btn-outline-primary me-2">
+                        <i class="bi bi-download"></i> Download Video
+                    </a>
+                    <a href="{% url 'download_diagnosis' video.id %}" class="btn btn-sm btn-outline-success">
+                        <i class="bi bi-file-earmark-text"></i> Download Diagnosis
+                    </a>
+                </div>
+
+                {% with diagnoses=video.diagnosis_set.all %}
+                {% if diagnoses %}
+                <h6><i class="bi bi-journal-text me-1"></i> Diagnosis Records:</h6>
+                <ul class="list-group list-group-flush">
+                    {% for d in diagnoses %}
+                    <li class="list-group-item">
+                        {{ d.created_at }} - <strong>Dr. {{ d.doctor.username }}</strong>: {{ d.diagnosis_text }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted"><em>No diagnosis records available.</em></p>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    You haven't uploaded any videos yet.
+</div>
+{% endif %}
+{% endblock %}
